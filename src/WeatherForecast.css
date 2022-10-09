@@ -1,0 +1,8 @@
+.WeatherForecast {
+    text-align: center;
+}
+
+.maxTemp {
+    margin-left: 5px;
+    opacity: 0.6;
+}
