@@ -1,32 +1,47 @@
-import React from "react";
-import WeatherIcon from "./WeatherIcon";
-import "./WeatherForecast.css";
+import React, { useState, useEffect } from "react";
+import "./WeatherForecast.css"; 
 import axios from "axios";
+import WeatherCastDay from "./WeatherCastDay";
 
 export default function WeatherForecast(props) {
+    let [loaded, setLoaded] = useState(false);
+    let [forecast, setForecast] = useState(null);
+
+    useEffect(() => {
+       setLoaded(false);
+    }, [props.coordinate]);
+        
     function handleResponse(response) {
-        console.log(response.data);
+        setForecast(response.data.daily);
+        setLoaded(true);
     }
 
-    let apiKey = "59ee4591990d1ea0e068edfbc69866c6";
-    let longitude = props.coordinate.longitude;
-    let latitude = props.coordinate.lat;
-    let apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}`;
-
-    axios.get(apiUrl).then(handleResponse);
-
-    return (
-        <div className="WeatherForecast">
-            <div className="row">
-                <div className="col">
-                    <div className="forecast-day">Thu</div> 
-                    <WeatherIcon code="01d" size={36}/> 
-                    <div className="forecast-temps">
-                        <span className="maxTemp">19°</span>
-                        <span className="minTemp">10°</span>
-                    </div>
+    if (loaded) {
+        return (
+            <div className="WeatherForecast">
+                <div className="row">
+                    {forecast.map(function (dailyForecast, index) {
+                        if (index < 5) {
+                            return (
+                            <div className="col" key={index}>
+                                <WeatherCastDay data={dailyForecast} />
+                            </div>
+                            );
+                        }
+                    })}
                 </div>
             </div>
-        </div>
-    );
+        );
+    } else {
+        let apiKey = "91e4be9d3f0ce62462b88df7804804ae";
+        let longitude = props.coordinate.longitude;
+        let latitude = props.coordinate.lat;
+        let apiUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+        axios.get(apiUrl).then(handleResponse);
+
+        return null;
+    }
 }
+
+    
